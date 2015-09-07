@@ -43,38 +43,41 @@ MeCab.prototype = {
         });
     },
     parse : function(str, callback) {
+        var self = this;
         process.nextTick(function() { // for bug
-            exec(MeCab._shellCommand(str), function(err, result) {
+            exec(self._shellCommand(str), function(err, result) {
                 if (err) { return callback(err); }
-                callback(err, MeCab._parseMeCabResult(result).slice(0,-2));
+                callback(err, self._parseMeCabResult(result).slice(0,-2));
             });
         });
     },
     parseSync : function(str) {
-        var result = execSync(MeCab._shellCommand(str));
-        return MeCab._parseMeCabResult(String(result)).slice(0, -2);
+        var result = execSync(this._shellCommand(str));
+        return this._parseMeCabResult(String(result)).slice(0, -2);
     },
     parseFormat : function(str, callback) {
-        MeCab.parse(str, function(err, result) {
+        var self = this;
+        this.parse(str, function(err, result) {
             if (err) { return callback(err); }
-            callback(err, MeCab._format(result));
+            callback(err, self._format(result));
         });
     },
     parseSyncFormat : function(str) {
-        return MeCab._format(MeCab.parseSync(str));
+        return this._format(this.parseSync(str));
     },
     _wakatsu : function(arr) {
         return arr.map(function(data) { return data[0]; });
     },
     wakachi : function(str, callback) {
-        MeCab.parse(str, function(err, arr) {
+        var self = this;
+        this.parse(str, function(err, arr) {
             if (err) { return callback(err); }
-            callback(null, MeCab._wakatsu(arr));
+            callback(null, self._wakatsu(arr));
         });
     },
     wakachiSync : function(str) {
-        var arr = MeCab.parseSync(str);
-        return MeCab._wakatsu(arr);
+        var arr = this.parseSync(str);
+        return this._wakatsu(arr);
     }
 };
 
